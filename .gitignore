@@ -3,3 +3,6 @@
 *.log
 uploads/
 .vscode/
+.DS_Store
+dist/
+build/
