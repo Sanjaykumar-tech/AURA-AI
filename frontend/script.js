@@ -1,8 +1,9 @@
 /* ═══════════════════════════════════════════
-   AURA AI — Premium Chat Logic (v2.2)
+   AURA AI — Premium Chat Logic (v2.3 Production)
    ═══════════════════════════════════════════ */
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://aura-ai-backend-z9rp.onrender.com/api';
+const BACKEND_URL = 'https://aura-ai-backend-z9rp.onrender.com';
 let token = localStorage.getItem('token');
 let currentChatId = null;
 let isLoginMode = true;
@@ -412,7 +413,7 @@ async function sendMessage() {
   } catch (err) {
     removeTyping(typingId);
     const msg = err.message.includes('fetch')
-      ? '⚠️ Backend offline. Start it with: cd backend && npm run dev'
+      ? '⚠️ Backend offline or slow. Wait 30s and retry.'
       : '⚠️ ' + err.message;
     addMessage('ai', msg);
     toast(err.message, 'error');
@@ -449,7 +450,7 @@ function addMessage(role, text) {
     ? `<div class="message-attachments">${
         window.attachedFiles
           .filter(f => f.type?.startsWith('image/'))
-          .map(f => `<img src="${API_URL.replace('/api', '')}${f.url}" alt="${f.name}" />`)
+          .map(f => `<img src="${BACKEND_URL}${f.url}" alt="${f.name}" />`)
           .join('')
       }</div>`
     : '';
@@ -503,7 +504,6 @@ function addMessage(role, text) {
       if (typeof hljs !== 'undefined') hljs.highlightElement(block);
     });
 
-    // Attach lightbox to images
     div.querySelectorAll('img').forEach(img => {
       img.onclick = () => openLightbox(img.src);
     });
@@ -787,18 +787,20 @@ voiceBtn.addEventListener('click', startVoice);
 micInputBtn.addEventListener('click', startVoice);
 
 /* ═══════════════════════════════════════════
-   FILE UPLOAD
+   FILE UPLOAD — Production
    ═══════════════════════════════════════════ */
 const fileInput = $('file-input');
 const filePreview = $('file-preview');
 window.attachedFiles = [];
 
-attachBtn.addEventListener('click', () => fileInput.click());
+attachBtn?.addEventListener('click', () => fileInput?.click());
 
-fileInput.addEventListener('change', async (e) => {
+fileInput?.addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
   if (file.size > 10 * 1024 * 1024) return toast('File too large (max 10MB)', 'error');
+
+  toast('Uploading ' + file.name + '...', 'info', 2000);
 
   const formData = new FormData();
   formData.append('file', file);
@@ -811,10 +813,11 @@ fileInput.addEventListener('change', async (e) => {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
+
     window.attachedFiles.push(data);
     trackStat('files');
     renderFilePreview();
-    toast('File attached', 'success');
+    toast('File attached ✅', 'success');
   } catch (err) {
     toast('Upload failed: ' + err.message, 'error');
   }
@@ -822,13 +825,14 @@ fileInput.addEventListener('change', async (e) => {
 });
 
 function renderFilePreview() {
+  if (!filePreview) return;
   filePreview.innerHTML = '';
   window.attachedFiles.forEach((f, i) => {
     const chip = document.createElement('div');
     chip.className = 'file-chip';
     const isImg = f.type?.startsWith('image/');
     chip.innerHTML = `
-      ${isImg ? `<img src="${API_URL.replace('/api', '')}${f.url}" />` : '📄'}
+      ${isImg ? `<img src="${BACKEND_URL}${f.url}" />` : '📄'}
       <span class="file-name">${escapeHtml(f.name)}</span>
       <button class="file-remove" data-i="${i}">✕</button>
     `;
@@ -839,6 +843,8 @@ function renderFilePreview() {
     filePreview.appendChild(chip);
   });
 }
+
+window.renderFilePreview = renderFilePreview;
 
 /* ═══════════════════════════════════════════
    SHARE
@@ -884,7 +890,6 @@ $('export-btn')?.addEventListener('click', () => {
 /* ═══════════════════════════════════════════
    IMAGE GENERATION
    ═══════════════════════════════════════════ */
-
 $('image-gen-btn')?.addEventListener('click', () => {
   $('image-prompt').value = '';
   $('image-style').value = '';
@@ -1199,7 +1204,7 @@ window.addEventListener('load', () => {
 });
 
 /* ═══════════════════════════════════════════
-   KEYBOARD SHORTCUTS (unified)
+   KEYBOARD SHORTCUTS
    ═══════════════════════════════════════════ */
 document.addEventListener('keydown', (e) => {
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -1715,7 +1720,6 @@ function renderFavorites() {
 /* ═══════════════════════════════════════════
    PASSWORD CHANGE LOGIC
    ═══════════════════════════════════════════ */
-
 $('cancel-password')?.addEventListener('click', () => passwordModal.classList.remove('active'));
 passwordModal?.querySelector('.modal-backdrop')?.addEventListener('click', () => passwordModal.classList.remove('active'));
 
@@ -1805,175 +1809,10 @@ $('submit-password-change')?.addEventListener('click', async () => {
 });
 
 /* ═══════════════════════════════════════════
-   FILE UPLOAD — BULLETPROOF VERSION v3
-   Replaces any previous upload code
-   ═══════════════════════════════════════════ */
-
-(function initFileUpload() {
-  console.log('🔧 File upload: Initializing...');
-
-  // Wait for DOM to be ready
-  function whenReady(fn) {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', fn);
-    } else {
-      fn();
-    }
-  }
-
-  whenReady(() => {
-    const attachBtn = document.getElementById('attach-btn');
-    const fileInput = document.getElementById('file-input');
-    const filePreview = document.getElementById('file-preview');
-
-    console.log('🔧 attachBtn:', attachBtn);
-    console.log('🔧 fileInput:', fileInput);
-    console.log('🔧 filePreview:', filePreview);
-
-    if (!attachBtn) {
-      console.error('❌ attach-btn not found in HTML!');
-      return;
-    }
-    if (!fileInput) {
-      console.error('❌ file-input not found in HTML!');
-      return;
-    }
-
-    // Initialize global attachedFiles if not present
-    if (!window.attachedFiles) window.attachedFiles = [];
-
-    // ───── CLICK HANDLER (bulletproof) ─────
-    // Remove any old listeners by cloning the button
-    const newAttachBtn = attachBtn.cloneNode(true);
-    attachBtn.parentNode.replaceChild(newAttachBtn, attachBtn);
-
-    newAttachBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      console.log('📎 Attach button clicked!');
-      fileInput.click();
-    });
-
-    console.log('✅ Attach button click handler attached');
-
-    // ───── FILE SELECTION HANDLER ─────
-    // Replace input to remove any old listeners
-    const newFileInput = fileInput.cloneNode(true);
-    fileInput.parentNode.replaceChild(newFileInput, fileInput);
-
-    newFileInput.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      console.log('📄 File selected:', file.name, file.size, 'bytes');
-
-      if (file.size > 10 * 1024 * 1024) {
-        if (typeof toast === 'function') toast('File too large (max 10MB)', 'error');
-        else alert('File too large (max 10MB)');
-        newFileInput.value = '';
-        return;
-      }
-
-      // Show "uploading" toast
-      if (typeof toast === 'function') toast('Uploading ' + file.name + '...', 'info', 2000);
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          if (typeof toast === 'function') toast('Not logged in', 'error');
-          return;
-        }
-
-        const res = await fetch('http://localhost:5000/api/chat/upload', {
-          method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + token },
-          body: formData
-        });
-
-        console.log('📡 Upload response status:', res.status);
-
-        const data = await res.json();
-        console.log('📡 Upload response:', data);
-
-        if (!res.ok) throw new Error(data.error || 'Upload failed');
-
-        window.attachedFiles.push(data);
-        console.log('✅ File added to attachedFiles:', data);
-
-        // Render preview
-        renderPreview();
-
-        if (typeof toast === 'function') toast('File attached ✅', 'success');
-      } catch (err) {
-        console.error('❌ Upload error:', err);
-        if (typeof toast === 'function') toast('Upload failed: ' + err.message, 'error');
-        else alert('Upload failed: ' + err.message);
-      }
-
-      newFileInput.value = '';
-    });
-
-    console.log('✅ File input change handler attached');
-
-    // ───── PREVIEW RENDERER ─────
-    function renderPreview() {
-      if (!filePreview) {
-        console.warn('⚠️ file-preview element missing');
-        return;
-      }
-
-      filePreview.innerHTML = '';
-
-      window.attachedFiles.forEach((f, i) => {
-        const chip = document.createElement('div');
-        chip.className = 'file-chip';
-        chip.style.cssText = `
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: rgba(99, 102, 241, 0.15);
-          border: 1px solid rgba(99, 102, 241, 0.3);
-          border-radius: 10px;
-          padding: 8px 12px;
-          font-size: 12px;
-          color: var(--text, #f0f0f5);
-          margin: 4px;
-        `;
-
-        const isImg = f.type && f.type.startsWith('image/');
-        const imgUrl = 'http://localhost:5000' + f.url;
-
-        chip.innerHTML = `
-          ${isImg ? `<img src="${imgUrl}" style="width:32px;height:32px;border-radius:6px;object-fit:cover;" />` : '<span style="font-size:20px;">📄</span>'}
-          <span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.name}</span>
-          <button class="file-remove" style="background:transparent;border:none;color:#ef4444;cursor:pointer;font-size:16px;padding:0 4px;">✕</button>
-        `;
-
-        chip.querySelector('.file-remove').onclick = (e) => {
-          e.stopPropagation();
-          window.attachedFiles.splice(i, 1);
-          renderPreview();
-          console.log('🗑️ File removed');
-        };
-
-        filePreview.appendChild(chip);
-      });
-
-      console.log('🎨 Preview rendered. Total files:', window.attachedFiles.length);
-    }
-
-    // Expose for other code
-    window.renderFilePreview = renderPreview;
-    window.renderFilePreview = renderPreview;
-
-    console.log('✅ File upload initialized successfully!');
-  });
-})();
-
-/* ═══════════════════════════════════════════
    APPLY SETTINGS ON LOAD
    ═══════════════════════════════════════════ */
 applySettings();
+
+console.log('✅ AURA AI loaded');
+console.log('🌐 API:', API_URL);
+console.log('🌐 Backend:', BACKEND_URL);
