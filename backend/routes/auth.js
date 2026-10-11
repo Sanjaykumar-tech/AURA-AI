@@ -17,10 +17,6 @@ router.post('/register', async (req, res) => {
 
     if (!username || !password)
       return res.status(400).json({ error: 'All fields required' });
-    if (username.length < 3)
-      return res.status(400).json({ error: 'Username must be 3+ characters' });
-    if (password.length < 6)
-      return res.status(400).json({ error: 'Password must be 6+ chars' });
 
     const exists = await User.findOne({ username });
     if (exists) return res.status(400).json({ error: 'Username taken' });

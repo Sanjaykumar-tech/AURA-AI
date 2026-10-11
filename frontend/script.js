@@ -1622,7 +1622,6 @@ $('account-change-username')?.addEventListener('click', () => {
   const cur = localStorage.getItem('username') || '';
   const newName = prompt('Enter new username:', cur);
   if (!newName || newName === cur) return;
-  if (newName.length < 3) return toast('Min 3 characters', 'error');
   localStorage.setItem('username', newName);
   userName.textContent = newName;
   userAvatar.textContent = newName[0].toUpperCase();
