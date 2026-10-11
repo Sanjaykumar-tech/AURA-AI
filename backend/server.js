@@ -13,6 +13,11 @@ const chatRoutes = require('./routes/chat');
 const app = express();
 
 /* ═══════════════════════════════════════════
+   TRUST PROXY (for Render / Heroku / etc.)
+   ═══════════════════════════════════════════ */
+app.set('trust proxy', 1);    
+
+/* ═══════════════════════════════════════════
    MIDDLEWARE
    ═══════════════════════════════════════════ */
 app.use(cors());
