@@ -2017,6 +2017,163 @@ body.no-animations *::after {
 
 body.no-particles #particles { display: none; }
 
+/* ═══════════════════════════════════════════
+   MOBILE RESPONSIVE FIXES
+   ═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .settings-modal-content {
+    max-width: 100vw !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+  }
+  .settings-layout {
+    grid-template-columns: 1fr !important;
+  }
+  .settings-tabs {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 10px !important;
+    gap: 6px !important;
+    scrollbar-width: none;
+  }
+  .settings-tabs::-webkit-scrollbar { display: none; }
+  .settings-tab {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    padding: 8px 14px !important;
+    font-size: 12px !important;
+    border-left: none !important;
+  }
+  .settings-tab.active {
+    border-left: none !important;
+    border-bottom: 2px solid var(--accent) !important;
+  }
+  .settings-content { padding: 16px !important; }
+  .setting-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 12px 0 !important;
+  }
+  .setting-select,
+  .setting-slider-wrap,
+  .setting-control {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .auth-modal-content {
+    grid-template-columns: 1fr !important;
+    max-width: 95vw !important;
+    width: 95vw !important;
+  }
+  .auth-visual { display: none !important; }
+  .auth-form { padding: 28px 20px !important; }
+  .chat-header {
+    flex-wrap: wrap !important;
+    padding: 12px !important;
+    gap: 8px !important;
+  }
+  .chat-title-wrap {
+    flex: 1 1 100%;
+    order: 1;
+  }
+  .header-actions {
+    overflow-x: auto !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+    order: 2;
+    scrollbar-width: none;
+  }
+  .header-actions::-webkit-scrollbar { display: none; }
+  .menu-btn { order: 0; flex-shrink: 0; }
+  .messages {
+    padding: 16px 12px !important;
+    gap: 16px !important;
+  }
+  .message {
+    max-width: 100% !important;
+    gap: 10px !important;
+  }
+  .message .avatar {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 13px !important;
+  }
+  .bubble {
+    font-size: 14px !important;
+    padding: 12px 14px !important;
+  }
+  .input-area { padding: 10px 12px 14px !important; }
+  .input-wrapper {
+    padding: 6px 6px 6px 10px !important;
+    border-radius: 18px !important;
+  }
+  #user-input {
+    font-size: 15px !important;
+    padding: 10px 4px !important;
+  }
+  .send-btn {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 12px !important;
+  }
+  .input-icon-btn {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  .input-footer {
+    font-size: 10px !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    align-items: flex-start !important;
+  }
+  .welcome { padding: 20px 16px !important; }
+  .welcome h1 { font-size: 28px !important; }
+  .welcome-sub {
+    font-size: 14px !important;
+    margin-bottom: 24px !important;
+  }
+  .suggestion-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  .suggestion-card { padding: 14px !important; }
+  .suggestion-text { font-size: 12.5px !important; }
+  .sidebar {
+    width: 85vw !important;
+    max-width: 300px !important;
+  }
+  .modal-content {
+    padding: 22px 18px !important;
+    max-width: 95vw !important;
+    max-height: 90vh !important;
+    border-radius: 18px !important;
+  }
+  .modal-content > h3 { font-size: 18px !important; }
+  .analytics-grid { grid-template-columns: 1fr !important; }
+  .color-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+  }
+  .favorites-list { max-height: 60vh !important; }
+  .template-btn {
+    font-size: 11.5px !important;
+    padding: 7px 12px !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .welcome h1 { font-size: 24px !important; }
+  .bubble { font-size: 13.5px !important; }
+  .settings-tab { padding: 7px 10px !important; font-size: 11px !important; }
+  .chat-header h2 { font-size: 14px !important; }
+}
+
 /* ═══════════ RESPONSIVE ═══════════ */
 @media (max-width: 900px) {
   .auth-modal-content { grid-template-columns: 1fr; max-width: 440px; }
