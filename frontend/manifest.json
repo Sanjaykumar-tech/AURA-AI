@@ -1,17 +1,17 @@
 {
   "name": "AURA AI — Premium Intelligent Assistant",
   "short_name": "AURA AI",
-  "description": "Your premium intelligent AI companion",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
-  "background_color": "#06060a",
-  "theme_color": "#6366f1",
-  "orientation": "portrait-primary",
-  "categories": ["productivity", "utilities", "education"],
+  "display_override": ["standalone", "minimal-ui"],
+  "description": "Your premium intelligent AI companion",
   "lang": "en",
   "dir": "ltr",
+  "theme_color": "#6366f1",
+  "background_color": "#06060a",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "utilities"],
   "icons": [
     {
       "src": "https://aura-ai-frontend-two.vercel.app/icon-192.png",
